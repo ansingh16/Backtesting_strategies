@@ -1,4 +1,8 @@
 class Portfolio:
+    """
+    Stores the information for a stack in your portfolio
+    its position, realised and unrealized PNL and net quantity
+    """
     def __init__(self):
         self.position = 0
         self.unrealized_pnl = 0
@@ -6,37 +10,36 @@ class Portfolio:
         self.net_position=0
         self.buys = 0
         self.sells = 0
-        self.executed=False
-        self.orders_executed=[]
+        self.symbol = None
+        
     
-    def add_trade(self,symbol,kind,qty,price):
-        if kind=='buy':
+    def add_trade(self,buy,qty,price):
+        # This will wither buy or subtrac the quantity 
+        # depending on position and buy singnal
+        if buy==True:
             self.buys += qty
         else:
-            self.sells -= qty
+            self.sells += qty
 
         self.net_position = self.buys - self.sells
-        sign = 1 if kind=='buy' else -1
 
-        try:
-            self.position += self.net_position*price*sign 
-        except:
-            self.position = self.net_position*price*sign 
+        diff = qty*price*(-1 if buy else 1)
+        self.position += diff
+
         # if all the shares have been dealt with you get your realised PnL
         if self.net_position==0:
             self.realized_pnl = self.position
 
-            self.unrealized_pnl = 0
     
-    def update_ur_pnl(self,prices,symbol):
+    def update_ur_pnl(self,price):
         
         if self.net_position == 0:
             self.unrealized_pnl = 0
         else:
-            self.unrealized_pnl = prices[symbol].closing_price * self.net_position + \
+            self.unrealized_pnl = price*self.net_position + \
             self.position
 
-    def event_fill(self,order):
+    # def event_fill(self,order):
         
-        self.orders_executed.append(order)
+    #     self.orders_executed.append(order)
 
